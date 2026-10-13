@@ -1,0 +1,87 @@
+{% extends "public/layout.html@app" %}
+
+{% block meta_title %}{{ $txt('contact_title', 'contact', 'app', 'Contact') }}{% endblock %}
+
+{% block content %}
+	<h1>{{ $txt('contact_title', 'contact', 'app', 'Contact') }}</h1>
+	<p class="muted">{{ $txt('contact_intro', 'contact', 'app', 'Write to us, and we will answer by e-mail.') }}</p>
+
+	<form id="contact-form" class="form" method="post" action="{{ $url('/contact.json') }}" data-error="{{ $txt('error_unexpected', 'contact', 'app', 'The message could not be sent. Try again later.') }}">
+		{{{ $csrfField() }}}
+
+		<label for="contact-name">{{ $txt('label_name', 'contact', 'app', 'Name') }}</label>
+		<input id="contact-name" type="text" name="name" maxlength="{{ $max_lengths['name'] }}" autocomplete="name" required>
+		<span class="field-error" data-error-for="name"></span>
+
+		<label for="contact-email">{{ $txt('label_email', 'contact', 'app', 'E-mail') }}</label>
+		<input id="contact-email" type="email" name="email" maxlength="{{ $max_lengths['email'] }}" autocomplete="email" required>
+		<span class="field-error" data-error-for="email"></span>
+
+		<label for="contact-message">{{ $txt('label_message', 'contact', 'app', 'Message') }}</label>
+		<textarea id="contact-message" name="message" maxlength="{{ $max_lengths['message'] }}" required></textarea>
+		<span class="field-error" data-error-for="message"></span>
+
+		{% if ($captcha_protection) %}
+			<label for="contact-captcha">{{ $txt('label_captcha', 'contact', 'app', 'Type the characters in the image') }}</label>
+			<span data-captcha-field>{{{ $captchaField() }}}</span>
+			<img src="{{ $captchaUrl() }}" width="200" height="64" alt="{{ $txt('captcha_alt', 'contact', 'app', 'Security code') }}" data-captcha-image>
+			<input id="contact-captcha" type="text" name="captcha" autocomplete="off" required>
+			<span class="field-error" data-error-for="captcha"></span>
+		{% endif %}
+
+		<button type="submit">{{ $txt('send', 'contact', 'app', 'Send') }}</button>
+		<p role="status" data-form-status></p>
+	</form>
+
+	<script>
+		(() => {
+			const form = document.getElementById('contact-form');
+			const status = form.querySelector('[data-form-status]');
+			const button = form.querySelector('button[type="submit"]');
+
+			form.addEventListener('submit', async (event) => {
+				event.preventDefault();
+				form.querySelectorAll('[data-error-for]').forEach((slot) => slot.textContent = '');
+				status.textContent = '';
+				button.disabled = true;
+
+				try {
+					// Ordinary form fields, so the CSRF and captcha fields travel as the helpers wrote them.
+					const response = await fetch(form.action, {
+						method: 'POST',
+						body: new FormData(form),
+						headers: { 'Accept': 'application/json' },
+					});
+					const body = await response.json();
+
+					if (response.status === 201) {
+						const done = document.createElement('p');
+						done.textContent = body.result.message;
+						form.replaceWith(done);
+						return;
+					}
+
+					status.textContent = body.detail || form.dataset.error;
+
+					for (const item of body.invalid_params || []) {
+						const slot = form.querySelector('[data-error-for="' + item.name + '"]');
+						if (slot) {
+							slot.textContent = item.message;
+						}
+					}
+
+					if (body.captcha) {
+						// Markup from Captcha::htmlField() on the server; it carries no user input.
+						form.querySelector('[data-captcha-field]').innerHTML = body.captcha.field;
+						form.querySelector('[data-captcha-image]').src = body.captcha.url;
+						form.elements.captcha.value = '';
+					}
+				} catch (error) {
+					status.textContent = form.dataset.error;
+				} finally {
+					button.disabled = false;
+				}
+			});
+		})();
+	</script>
+{% endblock %}

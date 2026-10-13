@@ -1,0 +1,122 @@
+<?php
+declare(strict_types=1);
+/*
+ * This file is part of the CitOmni framework.
+ * Low overhead, high performance, ready for anything.
+ *
+ * For more information, visit https://github.com/citomni
+ *
+ * Copyright (c) 2012-present Lars Grove Mortensen
+ * SPDX-License-Identifier: MIT
+ *
+ * For full copyright, trademark, and license information,
+ * please see the LICENSE file distributed with this source code.
+ */
+
+/*
+ * ------------------------------------------------------------------
+ * COMMAND TABLE (BASE LAYER) (CLI)
+ * ------------------------------------------------------------------
+ * This file defines CLI-facing commands for your CitOmni app.
+ *
+ * RESPONSIBILITY:
+ *   - citomni_cli_cfg.php      is for CLI config.
+ *   - citomni_cli_commands.php is for commands.
+ *
+ *   The array returned by this file is merged into $this->app->commands at boot.
+ *   The Runner uses $this->app->commands to dispatch CLI commands.
+ *
+ * MERGE MODEL (deterministic "last wins" per command key):
+ *   1) Vendor baseline:
+ *        \CitOmni\Cli\Boot\Registry::COMMANDS_CLI
+ *
+ *   2) Provider commands:
+ *        Each provider in /config/providers.php may define
+ *        public const COMMANDS_CLI = [ ... ];
+ *        Providers are processed in the order they appear
+ *        in providers.php.
+ *
+ *   3) /config/citomni_cli_commands.php
+ *        (this file)
+ *
+ *   4) /config/citomni_cli_commands.{ENV}.php
+ *        merged last, where {ENV} = CITOMNI_ENVIRONMENT
+ *        ('dev' | 'stage' | 'prod')
+ *
+ * IMPORTANT:
+ *   - "Last wins" merges deeply. If several layers define the same
+ *     command name (e.g. 'cache:warm'), the later layer overrides the
+ *     fields it sets. Fields it leaves out keep the earlier value; set
+ *     them to null to clear them. Associative values such as 'options'
+ *     merge per key; lists are replaced as a whole.
+ *
+ *   - This includes the vendor commands. citomni/cli ships 'app:info',
+ *     'cache:warm', and 'cache:clear' in every environment. An app layer
+ *     that defines one of those keys merges into the vendor definition;
+ *     set 'command' to replace the implementation.
+ *
+ *   - EMPTY ARRAYS ARE SKIPPED:
+ *     If this file returns [], the app does NOT treat that as
+ *     "wipe all commands". It simply means "no overrides from app base".
+ *     Same for providers with COMMANDS_CLI = [] and for the {ENV} file.
+ *
+ * RUNTIME ACCESS:
+ *   - After merge, the final command table lives on the App instance:
+ *
+ *         $this->app->commands['cache:warm']
+ *         $this->app->commands['auth:create-identity']
+ *
+ * COMMAND NAME CONVENTION:
+ *   - Use lowercase identifiers with colon-separated namespaces.
+ *   - Examples:
+ *       'cache:warm'
+ *       'auth:create-identity'
+ *       'auth:prune-expired-tokens'
+ *
+ * COMMAND DEFINITION SHAPE:
+ *   'report:daily' => [
+ *       'command'     => \App\Cli\Command\DailyReportCommand::class,
+ *       'description' => 'Build and send the daily report.',
+ *       'options'     => [], // optional, passed to the command constructor
+ *   ],
+ *
+ * CONTRACT:
+ *   - 'command' is required and must be a FQCN string.
+ *   - The class must extend \CitOmni\Kernel\Command\BaseCommand.
+ *   - 'description' is optional but recommended; it is shown by `php bin/citomni list`.
+ *   - 'options' is optional and must be an array when present.
+ *
+ * DEV-ONLY COMMANDS:
+ *   - Put debug or maintenance-only commands into
+ *     /config/citomni_cli_commands.dev.php
+ *     (or .stage.php, etc.). That file is merged LAST, but only if it:
+ *       a) exists, and
+ *       b) returns a non-empty array.
+ *
+ *     Typical examples:
+ *       'dev:seed'             (load local fixture data)
+ *       'debug:test-mail'      (local-only smoke test command)
+ *
+ *     This avoids shipping development-only command overrides to stage/prod
+ *     by accident. Terminal mistakes are still mistakes.
+ */
+return [
+
+	// -----------------------------------------------------------------
+	// Base app commands
+	// -----------------------------------------------------------------
+
+	// 'app:info', 'cache:warm', and 'cache:clear' come from citomni/cli.
+	// Do not register them here unless you mean to replace them.
+
+	'article:create' => [
+		'command'     => \App\Cli\Command\CreateArticleCommand::class,
+		'description' => 'Create a draft article.',
+	],
+
+	'article:publish' => [
+		'command'     => \App\Cli\Command\PublishArticleCommand::class,
+		'description' => 'Publish one draft article.',
+	],
+
+];

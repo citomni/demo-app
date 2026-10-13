@@ -1,0 +1,160 @@
+<?php
+declare(strict_types=1);
+/*
+ * This file is part of the CitOmni framework.
+ * Low overhead, high performance, ready for anything.
+ *
+ * For more information, visit https://github.com/citomni
+ *
+ * Copyright (c) 2012-present Lars Grove Mortensen
+ * SPDX-License-Identifier: MIT
+ *
+ * For full copyright, trademark, and license information,
+ * please see the LICENSE file distributed with this source code.
+ */
+
+/*
+ * ------------------------------------------------------------------
+ * HTTP CONFIG OVERLAY (dev)
+ * ------------------------------------------------------------------
+ * This is the final HTTP-specific config layer for the "dev" environment.
+ *
+ * Merge model (last wins):
+ *   1) Vendor HTTP baseline:  \CitOmni\Http\Boot\Registry::CFG_HTTP
+ *   2) Providers:             each CFG_COMMON, then CFG_HTTP, in providers.php order
+ *   3) App common base:       /config/citomni_cfg.php
+ *   4) App HTTP base:         /config/citomni_http_cfg.php
+ *   5) App common env:        /config/citomni_cfg.{ENV}.php
+ *   6) App HTTP env:          /config/citomni_http_cfg.{ENV}.php  (this file)
+ *
+ * This file wins over all earlier cfg layers when the resolved {ENV} is "dev".
+ *
+ * Typical usage:
+ *   - Allow auto-detected base URL during local development (no need to hardcode).
+ *   - Render selected non-fatal PHP errors and expose developer details.
+ *   - Force E_ALL so runtime error_reporting() does not hide configured diagnostics.
+ *   - Disable view caching to see template changes immediately.
+ *
+ * Policy:
+ *   - Only place keys here when you intend to *override* vendor/provider defaults.
+ *     Keep overlays minimal and intentional; do not mirror the full baseline.
+ *   - Dev overlays may be more permissive for diagnostics, but should remain
+ *     bounded and deterministic (no unbounded traces, no surprise side effects).
+ *   - /_system/appinfo.html answers only in dev and shows the *merged* runtime
+ *     config and route table. Use it to verify and to copy exact override syntax.
+ *
+ * Quick tips — how to find and copy the exact config for an override:
+ *   1) Open /_system/appinfo.html. It renders the complete merged config and routes.
+ *   2) Locate the key you need (e.g., "view.cache_enabled" or "mail.smtp.host").
+ *   3) Copy the array structure as rendered and paste it here (preserve PHP syntax;
+ *      prefer CITOMNI_APP_PATH for portable paths).
+ *   4) Save and warm config cache if enabled (App::warmCache()) to lock results.
+ *
+ * Notes:
+ *   - CITOMNI_ENVIRONMENT must equal "dev" for this file to load.
+ *   - You *may* define CITOMNI_PUBLIC_ROOT_URL for deterministic links on dev,
+ *     but auto-detection is acceptable in development.
+ *   - Keep secrets out of templates; pass only what views need.
+ *
+ * @internal App-owned overlay: small, deliberate, developer-focused.
+ * ------------------------------------------------------------------
+ */
+return [
+
+	/*
+	 * ------------------------------------------------------------------
+	 * HTTP
+	 * ------------------------------------------------------------------
+	 * In dev we typically let the kernel auto-detect the base URL.
+	 * Keep trust_proxy off unless you actually test behind a proxy.
+	 */
+	'http' => [
+		// 'base_url' => 'https://dev.example.local', // optional; usually auto-detected in dev
+		'trust_proxy' => false,
+		// 'trusted_proxies' => ['127.0.0.1','::1'],
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * ERROR HANDLER
+	 * ------------------------------------------------------------------
+	 * Render selected non-fatal PHP errors and expose developer details.
+	 * Force E_ALL so the active runtime mask cannot suppress diagnostics
+	 * selected below. Trace bounds, log paths and rotation inherit baseline.
+	 */
+	'error_handler' => [
+		'render' => [
+			'trigger' => E_WARNING | E_NOTICE | E_CORE_WARNING | E_COMPILE_WARNING
+				| E_USER_WARNING | E_USER_NOTICE | E_RECOVERABLE_ERROR
+				| E_DEPRECATED | E_USER_DEPRECATED,
+			'detail' => [
+				'level' => 1,
+			],
+			'force_error_reporting' => E_ALL,
+		],
+		'log' => [
+			'trigger' => E_ALL,
+		],
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * VIEW
+	 * ------------------------------------------------------------------
+	 * Disable template caching in dev to see changes immediately.
+	 */
+	'view' => [
+		'cache_enabled' => false,
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * COOKIE / SESSION
+	 * ------------------------------------------------------------------
+	 * On localhost over plain HTTP, cookie "secure" cannot be set to true.
+	 * Leave these on auto/null in dev unless you always use HTTPS locally.
+	 */
+	'cookie' => [
+		// 'secure'   => null, // auto-compute; leave unset to inherit baseline
+		'httponly' => true,
+		'samesite' => 'Lax',
+		'path'     => '/',
+	],
+
+	'session' => [
+		'save_path'       => \CITOMNI_APP_PATH . '/var/state/php_sessions',
+		// 'cookie_secure'   => null, // auto in dev; set true only if dev over HTTPS
+		'cookie_httponly' => true,
+		'cookie_samesite' => 'Lax',
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * SITE NOTICES (citomni/demo-provider)
+	 * ------------------------------------------------------------------
+	 * The management page at /notices/manage.html schedules and ends
+	 * notices without a login, so it is enabled in dev only.
+	 */
+	'demo_provider' => [
+		'notices' => [
+			'management_enabled' => true,
+		],
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * WEBHOOKS
+	 * ------------------------------------------------------------------
+	 * Usually off in dev unless explicitly testing admin flows.
+	 */
+	'webhooks' => [
+		'enabled' => false,
+	],
+	
+	
+];

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="{{ $language }}">
+<head>
+	<meta charset="{{ $charset }}">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="color-scheme" content="light dark">
+	<title>{% yield meta_title %} | {{ $app_name }}</title>
+	<style>
+		:root { --text: #1d2129; --muted: #5b6270; --line: #e3e6eb; --accent: #1b78cb; --ok: #1e7f4f; --warn: #9a6400; --error: #b42318; }
+		@media (prefers-color-scheme: dark) {
+			:root { --text: #e6eaf0; --muted: #9aa4b2; --line: #2a3242; --accent: #4da3ff; --ok: #4cc38a; --warn: #f5b84d; --error: #f97066; }
+		}
+		body { margin: 0 auto; max-width: 42rem; padding: 1.5rem 1rem 3rem; font: 1rem/1.6 system-ui, sans-serif; color: var(--text); }
+		header { display: flex; flex-wrap: wrap; gap: 1rem; align-items: baseline; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: .75rem; margin-bottom: 2rem; }
+		nav { display: flex; gap: 1rem; }
+		a { color: var(--accent); }
+		.muted, .demoprov-muted { color: var(--muted); }
+		.body { white-space: pre-line; }
+		.list { list-style: none; padding: 0; }
+		.list li { padding: .75rem 0; border-bottom: 1px solid var(--line); }
+		.flash, .demoprov-flash, .demoprov-notice { padding: .5rem .75rem; border-left: 4px solid var(--accent); }
+		.flash-success, .demoprov-flash-success { border-color: var(--ok); }
+		.flash-warning, .demoprov-flash-warning, .demoprov-notice-warning { border-color: var(--warn); }
+		.flash-error, .demoprov-flash-error { border-color: var(--error); }
+		.demoprov-notice { margin: 0 0 .75rem; }
+		.demoprov-table { width: 100%; border-collapse: collapse; }
+		.demoprov-table th, .demoprov-table td { padding: .5rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+		.form label, .demoprov-form label { display: block; margin-top: 1rem; font-weight: 600; }
+		.form input, .form textarea, .demoprov-form input, .demoprov-form select, .demoprov-form textarea { box-sizing: border-box; width: 100%; padding: .5rem; font: inherit; color: inherit; background: transparent; border: 1px solid var(--line); }
+		.form textarea { min-height: 10rem; }
+		.demoprov-form textarea { min-height: 6rem; }
+		.form img { display: block; margin: .5rem 0; }
+		.form button, .demoprov-form button { margin-top: 1rem; padding: .5rem 1rem; font: inherit; }
+		.field-error, .demoprov-field-error { color: var(--error); }
+		.demoprov-field-error { display: block; }
+	</style>
+</head>
+<body>
+	{% include "partials/notices.html@citomni/demo-provider" %}
+	<header>
+		<a href="{{ $url('/') }}"><strong>{{ $app_name }}</strong></a>
+		<nav>
+			<a href="{{ $url('/') }}">{{ $txt('nav_articles', 'articles', 'app', 'Articles') }}</a>
+			<a href="{{ $url('/contact.html') }}">{{ $txt('nav_contact', 'contact', 'app', 'Contact') }}</a>
+			{% if ($env['dev']) %}
+				<a href="{{ $url('/drafts.html') }}">{{ $txt('nav_drafts', 'articles', 'app', 'Drafts') }}</a>
+				<a href="{{ $url('/notices/manage.html') }}">{{ $txt('manage_title', 'notices', 'citomni/demo-provider', 'Site notices') }}</a>
+			{% endif %}
+		</nav>
+	</header>
+	<main>
+		{% yield content %}
+	</main>
+</body>
+</html>

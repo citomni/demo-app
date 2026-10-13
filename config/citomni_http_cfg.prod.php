@@ -1,0 +1,174 @@
+<?php
+declare(strict_types=1);
+/*
+ * This file is part of the CitOmni framework.
+ * Low overhead, high performance, ready for anything.
+ *
+ * For more information, visit https://github.com/citomni
+ *
+ * Copyright (c) 2012-present Lars Grove Mortensen
+ * SPDX-License-Identifier: MIT
+ *
+ * For full copyright, trademark, and license information,
+ * please see the LICENSE file distributed with this source code.
+ */
+
+/*
+ * ------------------------------------------------------------------
+ * HTTP CONFIG OVERLAY (prod)
+ * ------------------------------------------------------------------
+ * This is the final HTTP-specific config layer for the "prod" environment.
+ *
+ * Merge model (last wins):
+ *   1) Vendor HTTP baseline:  \CitOmni\Http\Boot\Registry::CFG_HTTP
+ *   2) Providers:             each CFG_COMMON, then CFG_HTTP, in providers.php order
+ *   3) App common base:       /config/citomni_cfg.php
+ *   4) App HTTP base:         /config/citomni_http_cfg.php
+ *   5) App common env:        /config/citomni_cfg.{ENV}.php
+ *   6) App HTTP env:          /config/citomni_http_cfg.{ENV}.php  (this file)
+ *
+ * This file wins over all earlier cfg layers when the resolved {ENV} is "prod".
+ *
+ * Typical usage:
+ *   - Set an absolute http.base_url (required in stage/prod unless the constant
+ *     CITOMNI_PUBLIC_ROOT_URL is defined at bootstrap).
+ *   - Disable developer niceties (display_errors off, stricter cookies, etc.).
+ *   - Adjust transport and logging for production posture.
+ *
+ * Policy:
+ *   - Only place keys here when you intend to *override* vendor/provider defaults.
+ *     Do not replicate the full baseline; keep overlays minimal and intentional.
+ *   - Production overlays should be deterministic and auditable: prefer explicit
+ *     values over auto-detection for anything security- or routing-sensitive.
+ *   - /_system/appinfo.html is the human-friendly view of the *merged*
+ *     configuration. It answers only in dev (404 elsewhere); its "Projected
+ *     config (prod)" panel is the prod configuration, built fresh from these
+ *     files. Use it to verify what will be in effect before deploying changes.
+ *
+ * Quick tips — how to find and copy the exact config for an override:
+ *   1) In dev, open /_system/appinfo.html and find "Projected config (prod)".
+ *   2) Locate the key you want to change (e.g. "error_handler.log.path" or "http.base_url").
+ *   3) Copy the displayed array structure and paste it into this file, preserving
+ *      PHP array syntax and paths (use CITOMNI_APP_PATH for portable paths).
+ *   4) Save and warm config cache (App::warmCache() or your deploy step) so the
+ *      kernel sees the overlay deterministically.
+ *
+ * Notes:
+ *   - CITOMNI_ENVIRONMENT must equal "prod" for this file to load.
+ *   - Keep base_url absolute, no trailing slash (e.g. "https://www.example.com").
+ *   - If you define CITOMNI_PUBLIC_ROOT_URL earlier, the kernel will use it verbatim.
+ *   - Keep secrets out of templates; pass only what views need.
+ *   - Avoid environment-specific debug flags here; use the dev overlay for diagnostics.
+ *
+ * @internal App-owned overlay: intended to be small, deliberate, and safe for CI/deploy.
+ * ------------------------------------------------------------------
+ */
+return [
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * HTTP
+	 * ------------------------------------------------------------------
+	 * Production must always define a deterministic base URL.
+	 * - No trailing slash.
+	 * - Never rely on auto-detection in stage/prod.
+	 * - Enable trust_proxy only if behind a known reverse proxy or LB.
+	 */
+	'http' => [
+		'base_url' => 'https://demo.citomni.com',		// Your PROD-url, i.e. https://www.example.com <- REMEMBER: No trailing slash!
+		// 'trust_proxy' => true,				// Enable only when reverse-proxied.
+		// 'trusted_proxies' => ['10.0.0.0/8'],	// Optional proxy IP/CIDR allow-list.
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * COOKIE
+	 * ------------------------------------------------------------------
+	 * Secure defaults for production:
+	 * - secure=true ensures HTTPS-only cookies.
+	 * - httponly=true prevents JavaScript access.
+	 * - samesite=Lax avoids most CSRF-style cross-origin requests
+	 *   while still allowing normal top-level navigation.
+	 */
+	'cookie' => [
+		'secure'   => true,   // Always HTTPS in production
+		'httponly' => true,
+		'samesite' => 'Lax',
+		'path'     => '/',
+		// 'domain' => 'example.com', // Only if sharing cookies across subdomains
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * SESSION
+	 * ------------------------------------------------------------------
+	 * Mirrors cookie policy for consistency.
+	 * Explicitly mark cookies as secure when using HTTPS-only sites.
+	 * The save_path uses CITOMNI_APP_PATH to ensure portability.
+	 */
+	'session' => [
+		'save_path'       => \CITOMNI_APP_PATH . '/var/state/php_sessions',
+		'cookie_secure'   => true,   // Explicit HTTPS-only session cookie
+		'cookie_httponly' => true,
+		'cookie_samesite' => 'Lax',
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * ERROR HANDLER
+	 * ------------------------------------------------------------------
+	 * Enforce production-safe non-fatal behavior even if an earlier cfg
+	 * layer enabled development diagnostics. Keep PHP's runtime
+	 * error_reporting() mask untouched and log all active non-fatal levels.
+	 */
+	'error_handler' => [
+		'render' => [
+			'trigger' => 0,
+			'force_error_reporting' => null,
+		],
+		'log' => [
+			'trigger' => E_ALL,
+		],
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * VIEW
+	 * ------------------------------------------------------------------
+	 * Template caching should be enabled in production for performance.
+	 */
+	'view' => [
+		'cache_enabled'			=> true,   // Cache enabled
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * WEBHOOKS
+	 * ------------------------------------------------------------------
+	 * Keep admin webhooks disabled unless actively used.
+	 * Secrets do NOT live in cfg. The HMAC secret is loaded from:
+	 *   CITOMNI_APP_PATH . '/var/secrets/webhooks.secret.php'
+	 * Baseline keys live in \CitOmni\Http\Boot\Registry::CFG_HTTP - override here only if needed.
+	 */
+	/*
+	'webhooks' => [
+		// Master switch. Keep disabled unless actively used.
+		'enabled' => true,
+
+		// Optional allow-list of source IPs (exact or IPv4 CIDR). 
+		// Empty list = no IP restriction. Non-empty = request IP must match one of the listed entries.
+		// Useful for whitelisting fixed build/deploy agents or CI runners.
+		// 'allowed_ips' => [
+			// '186.221.2.10',	// Example: Fixed outbound IP of your DevKit or CI server.
+		// ],
+	],
+	*/
+
+
+];

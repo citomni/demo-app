@@ -1,0 +1,35 @@
+{% extends "public/layout.html@app" %}
+
+{% block meta_title %}{{ $txt('drafts_title', 'articles', 'app', 'Drafts') }}{% endblock %}
+
+{% block content %}
+	<h1>{{ $txt('drafts_title', 'articles', 'app', 'Drafts') }}</h1>
+
+	{% foreach ($flash['msg'] as $type => $messages) %}
+		{% foreach ((array)$messages as $message) %}
+			<p class="flash flash-{{ $type }}">{{ $message }}</p>
+		{% endforeach %}
+	{% endforeach %}
+
+	{% if ($drafts === []) %}
+		<p class="muted">{{ $txt('drafts_empty', 'articles', 'app', 'There are no drafts. Create one with php bin/citomni article:create.') }}</p>
+	{% else %}
+		<ul class="list">
+			{% foreach ($drafts as $draft) %}
+				<li>
+					<strong>{{ $draft['title'] }}</strong><br>
+					{% if ($draft['refusal_reasons'] === []) %}
+						<form method="post" action="{{ $url('/article/' . $draft['id'] . '/publish') }}">
+							{{{ $csrfField() }}}
+							<button type="submit">{{ $txt('publish', 'articles', 'app', 'Publish') }}</button>
+						</form>
+					{% else %}
+						{% foreach ($draft['refusal_reasons'] as $reason) %}
+							<span class="muted">{{ $txt('reason_' . $reason, 'articles', 'app', $reason) }}</span>
+						{% endforeach %}
+					{% endif %}
+				</li>
+			{% endforeach %}
+		</ul>
+	{% endif %}
+{% endblock %}

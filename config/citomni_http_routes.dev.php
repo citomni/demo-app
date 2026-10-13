@@ -1,0 +1,87 @@
+<?php
+declare(strict_types=1);
+/*
+ * This file is part of the CitOmni framework.
+ * Low overhead, high performance, ready for anything.
+ *
+ * For more information, visit https://github.com/citomni
+ *
+ * Copyright (c) 2012-present Lars Grove Mortensen
+ * SPDX-License-Identifier: MIT
+ *
+ * For full copyright, trademark, and license information,
+ * please see the LICENSE file distributed with this source code.
+ */
+
+/*
+ * ------------------------------------------------------------------
+ * ROUTE TABLE (DEV-ONLY ROUTES AND OVERRIDES) (HTTP)
+ * ------------------------------------------------------------------
+ *
+ * HOW THIS FILE IS USED:
+ *   - When CITOMNI_ENVIRONMENT === 'dev', this file is *considered*
+ *     as the final layer in the route merge.
+ *
+ *   - HOWEVER: The App kernel will only merge this layer if the returned
+ *     array is non-empty. Returning [] means "skip me entirely".
+ *
+ * WHY RETURN [] BY DEFAULT?
+ *   - The CitOmni HTTP core (vendor) may already ship helpful dev tools
+ *     like /_system/appinfo.html, diagnostics, etc.
+ *   - If we shipped conflicting stubs here, we'd accidentally override
+ *     the real implementations in vendor for dev environments.
+ *
+ * HOW TO USE IT IN YOUR APP:
+ *   1) Copy the commented example below.
+ *   2) Paste it into the return array.
+ *   3) Adjust controller/action/template to match your app.
+ *
+ * EXAMPLE: force-enable a local-only cache warmer endpoint
+ *
+ * return [
+ *     '/cache/warm' => [
+ *         'controller'     => \App\Http\Controller\Dev\MaintenanceController::class,
+ *         'action'         => 'warmCacheNow',
+ *         'methods'        => ['POST','GET'], // allow GET in early dev if you want
+ *         'template_file'  => 'dev/cache_warm.html',
+ *         'template_layer' => 'app',
+ *     ],
+ * ];
+ *
+ * ERROR PAGES ARE NOT ROUTES:
+ *   - A numeric key such as 404 is never dispatched. The Router hands
+ *     404, 405 and 500 to ErrorHandler::httpError().
+ *   - To debug broken links, set error_handler.render.detail.level = 1
+ *     in citomni_http_cfg.dev.php (the dev scaffold does). A 404 page
+ *     then shows the path, method and reason. Every 404 is also logged
+ *     to http_router_404.jsonl in the error_handler.log.path directory.
+ *   - A dev-only error page goes in error_handler.templates.html in
+ *     citomni_http_cfg.dev.php.
+ *
+ * SECURITY NOTE:
+ *   - Anything you add here should *not* be exposed publicly in prod/stage.
+ *   - This file is only merged when CITOMNI_ENVIRONMENT === 'dev', but still:
+ *     don't put unauthenticated "do dangerous stuff" endpoints in controllers
+ *     that end up committed to public repos unless you're okay with that risk.
+ */
+return [
+
+	// The draft list and the publish action of the article example have no
+	// access control, so they are routed in dev only.
+	'/drafts.html' => [
+		'controller'     => \App\Http\Controller\ArticleController::class,
+		'action'         => 'drafts',
+		'methods'        => ['GET'],
+		'template_file'  => 'public/drafts.html',
+		'template_layer' => 'app',
+	],
+
+	'regex' => [
+		'/article/{id}/publish' => [
+			'controller' => \App\Http\Controller\ArticleController::class,
+			'action'     => 'publish',
+			'methods'    => ['POST'],
+		],
+	],
+
+];

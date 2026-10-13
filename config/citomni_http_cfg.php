@@ -1,0 +1,319 @@
+<?php
+declare(strict_types=1);
+/*
+ * This file is part of the CitOmni framework.
+ * Low overhead, high performance, ready for anything.
+ *
+ * For more information, visit https://github.com/citomni
+ *
+ * Copyright (c) 2012-present Lars Grove Mortensen
+ * SPDX-License-Identifier: MIT
+ *
+ * For full copyright, trademark, and license information,
+ * please see the LICENSE file distributed with this source code.
+ */
+
+/*
+ * ------------------------------------------------------------------
+ * MAIN APPLICATION CONFIGURATION (HTTP)
+ * ------------------------------------------------------------------
+ * This file defines app-owned HTTP-specific settings for your CitOmni app.
+ *
+ * POLICY:
+ *   - Keep this file minimal and ONLY declare HTTP-specific keys that should
+ *     override earlier cfg layers. Do not mirror the vendor baseline here.
+ *
+ * MERGE MODEL (cfg, last wins):
+ *   1) Vendor HTTP baseline:  \CitOmni\Http\Boot\Registry::CFG_HTTP
+ *   2) Providers:             each CFG_COMMON, then CFG_HTTP, in providers.php order
+ *   3) App common base:       /config/citomni_cfg.php
+ *   4) App HTTP base:         /config/citomni_http_cfg.php          (this file)
+ *   5) App common env:        /config/citomni_cfg.{ENV}.php
+ *   6) App HTTP env:          /config/citomni_http_cfg.{ENV}.php    <- wins last
+ *
+ *   {ENV} is an explicit buildConfig($env) override when supplied; otherwise it
+ *   comes from CITOMNI_ENVIRONMENT and falls back to "prod" when undefined.
+ *
+ * MERGE RULES:
+ *   - Associative arrays merge recursively; per-key, the last source wins.
+ *   - Numeric arrays (lists) are replaced wholesale by the last source.
+ *   - Empty values ('', 0, false, null, []) are still valid overrides and they win.
+ *
+ * ACCESS IN CODE:
+ *   - $this->app->cfg->identity->app_name
+ *   - $this->app->cfg->http->base_url
+ *   - $this->app->cfg->mail->smtp->host
+ *
+ * BASE URL POLICY:
+ *   - If CITOMNI_PUBLIC_ROOT_URL is defined, the kernel uses it verbatim in all environments.
+ *   - Dev:
+ *       If http.base_url is empty and the constant is not defined, the kernel may auto-detect
+ *       CITOMNI_PUBLIC_ROOT_URL from the incoming request (honoring trust_proxy if enabled).
+ *   - Stage/Prod:
+ *       Never auto-detect. Provide an absolute http.base_url
+ *       (e.g. 'https://www.example.com') in citomni_http_cfg.{ENV}.php,
+ *       or define CITOMNI_PUBLIC_ROOT_URL yourself.
+ *   - Always omit trailing slash in base_url.
+ *
+ * PROXY TRUST:
+ *   - http.trust_proxy toggles honoring Forwarded/X-Forwarded-* headers during base URL detection.
+ *   - http.trusted_proxies (array) is passed to Request::setTrustedProxies([...]) for stricter control.
+ *   - When in doubt, keep trust_proxy=false. Guessing headers is not a security strategy.
+ *
+ * LOCALE:
+ *   - Kernel enforces locale.timezone via date_default_timezone_set()
+ *     and locale.charset via ini_set('default_charset').
+ *   - Use valid timezone identifiers ('Europe/Copenhagen') and charsets ('UTF-8').
+ *
+ * ERROR HANDLER:
+ *   - ErrorHandler always renders something (no blank pages).
+ *   - Detailed stack traces are ONLY shown when CITOMNI_ENVIRONMENT === 'dev'
+ *     and error_handler.render.detail.level >= 1.
+ *   - Logs are written in JSONL with bounded rotation under /var/logs.
+ *
+ * MAINTENANCE:
+ *   - $this->app->maintenance->guard() uses cfg.maintenance.* at runtime to decide
+ *     if we should short-circuit the request with an HTTP 503.
+ *
+ * ENV & SECRETS:
+ *   - It's okay to keep secrets here; OPcache holds PHP in memory.
+ *   - Do not leak sensitive cfg nodes directly to templates. Pass only
+ *     the data that view code actually needs.
+ *
+ * NOTE:
+ *   - Controllers/Models/Services typically extend BaseController/BaseModel/BaseService
+ *     to gain $this->app for cfg/services access.
+ * ------------------------------------------------------------------
+ */
+return [
+
+	/*
+	 * ------------------------------------------------------------------
+	 * WEBHOOKS
+	 * ------------------------------------------------------------------
+	 * Keep admin webhooks disabled unless actively used.
+	 * Secrets do NOT live in cfg. The HMAC secret is loaded from:
+	 *   CITOMNI_APP_PATH . '/var/secrets/webhooks.secret.php'
+	 * Baseline keys live in \CitOmni\Http\Boot\Registry::CFG_HTTP - override here only if needed.
+	 */
+	/*
+	'webhooks' => [
+		// Master switch. Keep disabled unless actively used.
+		'enabled' => true,
+
+		// Optional allow-list of source IPs (exact or IPv4 CIDR). 
+		// Empty list = no IP restriction. Non-empty = request IP must match one of the listed entries.
+		// Useful for whitelisting fixed build/deploy agents or CI runners.
+		// 'allowed_ips' => [
+			// '186.221.2.10',	// Example: Fixed outbound IP of your DevKit or CI server.
+		// ],
+	],
+	*/
+
+
+	/*
+	 *------------------------------------------------------------------
+	 * HTTP SETTINGS
+	 *------------------------------------------------------------------
+	 */
+	// 'http' => [
+		// 'base_url' => 'https://www.mycitomniapp.com', // Never include a trailing slash
+
+		// trust_proxy: true only when behind a trusted reverse proxy/LB; enables honoring Forwarded/X-Forwarded-*.
+		// trusted_proxies: optional allow-list of proxy IPs/CIDRs given to Request::setTrustedProxies().
+		// When in doubt, keep trust_proxy=false. Guessing headers is not a security strategy.
+		// 'trust_proxy'     => false,
+		// 'trusted_proxies' => ['10.0.0.0/8','192.168.0.0/16','::1'],
+	// ],
+
+
+	/*
+	 *------------------------------------------------------------------
+	 * VIEW / CONTENT / TEMPLATE ENGINE
+	 *------------------------------------------------------------------
+	 */
+	/*
+	'view' => [
+	
+		// Cache
+		'cache_enabled'        => true,
+	
+	
+		// asset_version is the cache-buster that $asset() appends as ?v=...
+		// Bump it whenever a file under public/assets/ changes, so returning visitors fetch the new file instead of their cached copy.
+		'asset_version' => '2026-10-10',
+
+
+		// Marketing scripts (inserted into <head>)
+		'marketing_scripts'    => '<!-- Your script -->',
+		
+	],
+	*/
+
+
+	/*
+	 *------------------------------------------------------------------
+	 * ERROR HANDLER
+	 *------------------------------------------------------------------
+	 * Overview:
+	 * - The HTTP ErrorHandler always logs and always renders for:
+	 *   1) Uncaught exceptions,
+	 *   2) Shutdown fatals (E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR),
+	 *   3) Router HTTP errors (404/405/5xx via httpError(...)).
+	 *   These are non-optional (to prevent blank pages).
+	 *
+	 * Rendering of non-fatal PHP errors:
+	 * - Controlled by error_handler.render.trigger after PHP's active error_reporting()
+	 *   mask has been honored. The vendor baseline keeps rendering disabled with 0.
+	 * - Fatal classes are ignored even if set (sanitized by the handler):
+	 *   E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR.
+	 *
+	 * Client detail level and traces:
+	 * - error_handler.render.detail.level gates client-facing detail only. Level >= 1
+	 *   takes effect only when CITOMNI_ENVIRONMENT === 'dev'.
+	 * - error_handler.render.detail.trace shapes exception traces in every environment.
+	 *   The same bounded exception trace is written to http_err_exception.jsonl and,
+	 *   when dev detail is enabled, exposed to the client. Other error categories do
+	 *   not include stack traces.
+	 *
+	 * Optional error_reporting override:
+	 * - error_handler.render.force_error_reporting (int|null):
+	 *   - If an int is set, ErrorHandler calls error_reporting(...) during install().
+	 *   - Dev/stage may use E_ALL for deterministic diagnostics. Prod should normally
+	 *     leave the runtime mask untouched.
+	 *
+	 * Logging:
+	 * - error_handler.log.trigger controls non-fatal PHP-error logging after the active
+	 *   error_reporting() mask. Exceptions, shutdown fatals and Router HTTP errors are
+	 *   logged independently of this mask.
+	 * - error_handler.log.path (absolute dir) must be writable.
+	 * - Rotation is size-guarded. Before a write would exceed max_bytes, the live JSONL
+	 *   is rotated. A single record larger than max_bytes is written whole when the live
+	 *   file is empty. At most max_files rotated siblings are retained per base file.
+	 * - File names (per type):
+	 *   - Exceptions:  http_err_exception.jsonl
+	 *   - Shutdown:    http_err_shutdown.jsonl
+	 *   - PHP errors:  http_err_phperror.jsonl
+	 *   - Router:      http_router_404.jsonl, http_router_405.jsonl,
+	 *                  http_router_5xx.jsonl, http_router_other.jsonl
+	 *
+	 * Templates (HTML responses):
+	 * - error_handler.templates.html and error_handler.templates.html_failsafe are
+	 *   optional absolute paths to plain PHP templates. They receive a $data array:
+	 *   {language, status, status_text, error_id, title, message, details|null,
+	 *    request_id, year}.
+	 * - If unavailable, a minimal inline HTML fallback is used.
+	 * - Content negotiation returns JSON when the client sends Accept: application/json
+	 *   (or +json) or X-Requested-With: XMLHttpRequest.
+	 *
+	 * Default status codes:
+	 * - error_handler.status_defaults provides fallbacks for 'exception', 'shutdown'
+	 *   and 'php_error' (typically 500). Router HTTP errors always pass an explicit
+	 *   status to httpError(...).
+	 *
+	 * Migration notes (from legacy keys):
+	 * - The kernel no longer uses legacy keys like:
+	 *   error_handler.log_file, recipient, sender, template, display_errors, max_log_size.
+	 * - Replace them with the structured keys under error_handler.render, .log,
+	 *   .templates and .status_defaults as described above.
+	 *
+	 * Config caches:
+	 * - When config caches are warm (e.g., var/cache/cfg.http.php), the evaluated
+	 *   values are frozen until the cache is warmed again. Changing this file will
+	 *   not take effect until the cache is rebuilt.
+	 */
+	/*
+	'error_handler' => [
+
+		'render' => [
+
+			// Which non-fatal PHP error levels (bitmask) should trigger rendering?
+			// - 0 (vendor baseline): do not render non-fatal errors.
+			// - PHP's active error_reporting() mask is honored before this mask.
+			// - DO NOT include fatal classes: E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR.
+			//   The handler will sanitize fatals away even if misconfigured.
+			//
+			// Typical dev choice (see dev overlay):
+			//   E_WARNING | E_NOTICE | E_CORE_WARNING | E_COMPILE_WARNING |
+			//   E_USER_WARNING | E_USER_NOTICE | E_RECOVERABLE_ERROR |
+			//   E_DEPRECATED | E_USER_DEPRECATED
+			'trigger' => 0,
+
+			'detail' => [
+
+				// How much detail should be shown to the client?
+				// 0 = minimal client message.
+				// 1 = developer details; effective only when CITOMNI_ENVIRONMENT === 'dev'.
+				// This flag does not gate logging.
+
+				'level' => 0,
+
+				// Trace caps always shape logged exception traces in every environment.
+				// Dev detail exposes the same bounded exception trace to the client.
+				'trace' => [
+					'max_frames'      => 120,  // Maximum number of stack frames included.
+					'max_arg_strlen'  => 512,  // Max chars shown per string argument.
+					'max_array_items' => 20,   // Max array items per level.
+					'max_depth'       => 3,    // Recursion depth when dumping arrays/objects.
+					'ellipsis'        => '...',// Ellipsis marker for truncated output.
+				],
+			],
+
+			// Optional hard override of PHP's error_reporting at install time (int mask).
+			// - Leave unset/null to respect the existing runtime mask.
+			// - Dev/stage may use E_ALL for deterministic diagnostics.
+			
+			// 'force_error_reporting' => null,
+		],
+
+		'log' => [
+
+			// Which non-fatal PHP error levels (bitmask) should be logged?
+			// - Vendor baseline: E_ALL. PHP's active error_reporting() mask is honored first.
+			// - Exceptions, shutdown fatals and Router HTTP errors are logged independently.
+			///
+			'trigger'    => E_ALL,
+
+			
+			// Log directory (absolute). Files are JSONL with size-guarded rotation.
+			// - Rotation strategy: sidecar lock + copy+truncate, timestamped rotated files.
+			// - Retention: keeps at most 'max_files' rotated siblings per base; live file persists.
+			///
+			'path'       => \CITOMNI_APP_PATH . '/var/logs',
+
+			
+			// Rotate before the next write would exceed this many bytes.
+			// A single oversized record is written whole when the live file is empty.
+			///
+			'max_bytes'  => 2_000_000, // ~2MB
+
+			
+			// Maximum number of rotated files to keep per base (live file excluded).
+			'max_files'  => 10,
+		],
+
+		'templates' => [
+
+			// Optional primary HTML template for error pages.
+			// - Plain PHP file; receives $data array with keys:
+			//   language, status, status_text, error_id, title, message, details|null, request_id, year
+			// - If missing/unreadable, handler falls back to 'html_failsafe' and finally inline minimal HTML.
+			'html'          => \CITOMNI_APP_PATH . '/templates/error/error.php',
+
+			// Optional failsafe HTML template. Leave null/empty to skip.
+			'html_failsafe' => null,
+		],
+
+		'status_defaults' => [
+
+			// Default HTTP status codes when a category-specific status is not explicitly set.
+			// - 'exception' and 'shutdown' are almost always 500.
+			// - 'php_error' is used when rendering non-fatal PHP errors.
+			'exception' => 500,
+			'shutdown'  => 500,
+			'php_error' => 500,
+		],
+	],
+	*/
+
+];

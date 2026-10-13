@@ -1,0 +1,224 @@
+<?php
+declare(strict_types=1);
+/*
+ * This file is part of the CitOmni framework.
+ * Low overhead, high performance, ready for anything.
+ *
+ * For more information, visit https://github.com/citomni
+ *
+ * Copyright (c) 2012-present Lars Grove Mortensen
+ * SPDX-License-Identifier: MIT
+ *
+ * For full copyright, trademark, and license information,
+ * please see the LICENSE file distributed with this source code.
+ */
+
+/*
+ * ------------------------------------------------------------------
+ * ROUTE TABLE (BASE LAYER) (HTTP)
+ * ------------------------------------------------------------------
+ * This file defines HTTP-facing routes for your CitOmni app.
+ *
+ * RESPONSIBILITY:
+ *   - citomni_http_cfg.php    is for config (identity, locale, http.base_url, etc.).
+ *   - citomni_http_routes.php is for routes.
+ *
+ *   The array returned by this file is merged into $this->app->routes at boot.
+ *   The Router uses $this->app->routes to dispatch incoming HTTP requests.
+ *
+ * MERGE MODEL (deterministic "last wins"):
+ *   1) Vendor baseline:
+ *        \CitOmni\Http\Boot\Registry::ROUTES_HTTP
+ *
+ *   2) Provider routes:
+ *        Each provider in /config/providers.php may define
+ *        public const ROUTES_HTTP = [ ... ];
+ *        Providers are processed in the order they appear
+ *        in providers.php.
+ *
+ *   3) /config/citomni_http_routes.php
+ *        (this file)
+ *
+ *   4) /config/citomni_http_routes.{ENV}.php
+ *        merged last, where {ENV} = CITOMNI_ENVIRONMENT
+ *        ('dev' | 'stage' | 'prod')
+ *
+ * IMPORTANT:
+ *   - "Last wins" merges deeply. If several layers define the same
+ *     literal path (e.g. '/login'), the later layer overrides the fields
+ *     it sets. Fields it leaves out keep the earlier value; set them to
+ *     null to clear them. 'methods' is a list and is replaced as a whole.
+ *
+ *   - Regex routes merge per pattern under 'regex'. A pattern that no
+ *     earlier layer defines is appended, so it is tried after theirs.
+ *     A redefined pattern keeps its position, and its fields merge as
+ *     for a literal path.
+ *
+ *   - EMPTY ARRAYS ARE SKIPPED:
+ *     If this file returns [], the app does NOT treat that as
+ *     "wipe all routes". It simply means "no overrides from app base".
+ *     Same for providers with ROUTES_HTTP = [] and for the {ENV} file.
+ *     This applies to whole layers only: 'regex' => [] inside a layer
+ *     replaces the regex routes of all earlier layers.
+ *
+ * RUNTIME ACCESS:
+ *   - After merge, the final route table lives on the App instance:
+ *
+ *         $this->app->routes['/']
+ *         $this->app->routes['regex']
+ *
+ * MATCHING RULES:
+ *
+ *   1) Exact routes (top-level keys like '/' or '/legal/website-license')
+ *      - Router tries these first.
+ *
+ *      Example:
+ *        '/' => [
+ *          'controller'     => \App\Http\Controller\ArticleController::class,
+ *          'action'         => 'index',
+ *          'methods'        => ['GET'], // HEAD auto-added; OPTIONS auto-handled
+ *          'template_file'  => 'public/articles.html',
+ *          'template_layer' => 'app',
+ *        ],
+ *
+ *   2) Regex / placeholder routes
+ *      - Under the 'regex' key below.
+ *      - Checked in array order.
+ *      - Built-in placeholders:
+ *           {id}    => [0-9]+
+ *           {email} => [a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}
+ *           {slug}  => [a-zA-Z0-9-_]+
+ *           {code}  => [a-zA-Z0-9]+
+ *        Any other placeholder matches one path segment ([^/]+).
+ *      - Captured values are passed to the action as positional arguments.
+ *
+ *      Example:
+ *        'regex' => [
+ *          '/article/{id}.html' => [
+ *            'controller'     => \App\Http\Controller\ArticleController::class,
+ *            'action'         => 'show',
+ *            'methods'        => ['GET'],
+ *            'template_file'  => 'public/article.html',
+ *            'template_layer' => 'app',
+ *          ],
+ *        ],
+ *
+ * ERROR PAGES:
+ *   - Error pages are not routes. The Router hands 404, 405 and 500 to
+ *     ErrorHandler::httpError(), which logs and renders them.
+ *   - Customize the page with error_handler.templates.html (and
+ *     .html_failsafe) in citomni_http_cfg.php.
+ *
+ * METHODS / ALLOWED VERBS:
+ *   - 'methods' => ['GET','POST',...]
+ *   - GET implies HEAD (automatically allowed).
+ *   - OPTIONS is auto-handled (router responds with Allow: ...).
+ *   - If request method is not allowed, router returns 405.
+ *
+ * TEMPLATING HINTS FOR CONTROLLERS:
+ *   - 'template_file'  => 'public/foo.html'
+ *   - 'template_layer' => 'app'
+ *   These are injected into the controller so it can forward them to
+ *   TemplateEngine without hardcoding layout knowledge everywhere.
+ *
+ * DEV-ONLY ROUTES:
+ *   - Put debug/admin-only stuff into /config/citomni_http_routes.dev.php
+ *     (or .stage.php, etc.). That file is merged LAST, but only if it:
+ *       a) exists, and
+ *       b) returns a non-empty array.
+ *
+ *     Typical examples:
+ *       '/appinfo.html'    (dumps cfg/services/routes for dev)
+ *       '/cache/warm'      (force $this->app->warmCache() in dev)
+ *     This avoids shipping debug endpoints to prod by accident.
+ */
+return [
+
+
+	// -----------------------------------------------------------------
+	// Exact routes (match first)
+	// -----------------------------------------------------------------
+
+	// Replaces the CitOmni welcome page of citomni/http.
+	'/' => [
+		'controller'     => \App\Http\Controller\ArticleController::class,
+		'action'         => 'index',
+		'methods'        => ['GET'], // HEAD auto-added; OPTIONS handled automatically
+		'template_file'  => 'public/articles.html',
+		'template_layer' => 'app',
+	],
+
+	'/articles.json' => [
+		'controller' => \App\Http\Controller\ArticleController::class,
+		'action'     => 'indexJson',
+		'methods'    => ['GET'],
+	],
+
+	'/download-example.pdf' => [
+		'controller' => \App\Http\Controller\DownloadController::class,
+		'action'     => 'example',
+		'methods'    => ['GET'],
+	],
+
+	'/contact.html' => [
+		'controller'     => \App\Http\Controller\ContactController::class,
+		'action'         => 'form',
+		'methods'        => ['GET'],
+		'template_file'  => 'public/contact.html',
+		'template_layer' => 'app',
+	],
+
+	'/contact.json' => [
+		'controller' => \App\Http\Controller\ContactController::class,
+		'action'     => 'send',
+		'methods'    => ['POST'],
+	],
+
+	// The captcha image behind $captchaUrl(), at security.captcha.image_path.
+	'/captcha.png' => [
+		'controller' => \CitOmni\Http\Controller\CaptchaController::class,
+		'action'     => 'image',
+		'methods'    => ['GET'],
+	],
+
+	// The management page of citomni/demo-provider in this app's layout. The
+	// entry merges into the package's route, so only the template changes.
+	// The page answers 404 unless demo_provider.notices.management_enabled is
+	// true, as in citomni_http_cfg.dev.php.
+	'/notices/manage.html' => [
+		'template_file'  => 'public/notices.html',
+		'template_layer' => 'app',
+	],
+
+
+
+	// -----------------------------------------------------------------
+	// Regex / placeholder routes (evaluated in array order)
+	// Placeholders supported only here. Built-ins: {id}, {email}, {slug}, {code}
+	// Keep at least one pattern when you enable this key: an empty
+	// 'regex' => [] replaces the regex routes of vendor and providers.
+	// -----------------------------------------------------------------
+
+	'regex' => [
+		'/article/{id}.html' => [
+			'controller'     => \App\Http\Controller\ArticleController::class,
+			'action'         => 'show',
+			'methods'        => ['GET'],
+			'template_file'  => 'public/article.html',
+			'template_layer' => 'app',
+		],
+
+		'/article/{id}.json' => [
+			'controller' => \App\Http\Controller\ArticleController::class,
+			'action'     => 'showJson',
+			'methods'    => ['GET'],
+		],
+
+		'/article/{id}.txt' => [
+			'controller' => \App\Http\Controller\ArticleController::class,
+			'action'     => 'showText',
+			'methods'    => ['GET'],
+		],
+	],
+
+];

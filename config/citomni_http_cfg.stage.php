@@ -1,0 +1,163 @@
+<?php
+declare(strict_types=1);
+/*
+ * This file is part of the CitOmni framework.
+ * Low overhead, high performance, ready for anything.
+ *
+ * For more information, visit https://github.com/citomni
+ *
+ * Copyright (c) 2012-present Lars Grove Mortensen
+ * SPDX-License-Identifier: MIT
+ *
+ * For full copyright, trademark, and license information,
+ * please see the LICENSE file distributed with this source code.
+ */
+
+/*
+ * ------------------------------------------------------------------
+ * HTTP CONFIG OVERLAY (stage)
+ * ------------------------------------------------------------------
+ * This is the final HTTP-specific config layer for the "stage" environment.
+ *
+ * Merge model (last wins):
+ *   1) Vendor HTTP baseline:  \CitOmni\Http\Boot\Registry::CFG_HTTP
+ *   2) Providers:             each CFG_COMMON, then CFG_HTTP, in providers.php order
+ *   3) App common base:       /config/citomni_cfg.php
+ *   4) App HTTP base:         /config/citomni_http_cfg.php
+ *   5) App common env:        /config/citomni_cfg.{ENV}.php
+ *   6) App HTTP env:          /config/citomni_http_cfg.{ENV}.php  (this file)
+ *
+ * This file wins over all earlier cfg layers when the resolved {ENV} is "stage".
+ *
+ * Typical usage:
+ *   - Set an absolute http.base_url (required in stage/prod unless the constant
+ *     CITOMNI_PUBLIC_ROOT_URL is defined at bootstrap).
+ *   - Mirror production posture (routing, cookies, sessions, caching) without
+ *     exposing developer details to clients.
+ *   - Keep logs verbose enough for QA, but never leak internals to the browser.
+ *
+ * Policy:
+ *   - Only put keys here when you intend to *override* vendor/provider defaults.
+ *     Keep overlays minimal and intentional; do not mirror the full baseline.
+ *   - Prefer explicit values over auto-detection for security- and routing-critical
+ *     settings (e.g., base_url, proxy trust).
+ *   - /_system/appinfo.html answers only in dev (404 elsewhere). Its "Projected
+ *     config (stage)" panel is the *merged* stage configuration, built fresh from
+ *     these files. Use it to confirm effective values before deploy.
+ *
+ * Quick tips — how to find and copy the exact config for an override:
+ *   1) In dev, open /_system/appinfo.html and find "Projected config (stage)".
+ *   2) Find the key you need (e.g., "cookie.secure" or "error_handler.log.path").
+ *   3) Copy the rendered array structure and paste it here, preserving PHP syntax
+ *      and using CITOMNI_APP_PATH for portable paths.
+ *   4) Save and warm config cache (App::warmCache() or your deploy step) so the
+ *      kernel loads this overlay deterministically.
+ *
+ * Notes:
+ *   - CITOMNI_ENVIRONMENT must equal "stage" for this file to load.
+ *   - Keep base_url absolute, no trailing slash (e.g., "https://stage.example.com").
+ *   - If you define CITOMNI_PUBLIC_ROOT_URL earlier, the kernel will use it verbatim.
+ *   - Stage should not display developer traces to clients; rely on logs instead.
+ *
+ * @internal App-owned overlay: small, deliberate, CI-friendly.
+ * ------------------------------------------------------------------
+ */
+return [
+
+	/*
+	 * ------------------------------------------------------------------
+	 * HTTP
+	 * ------------------------------------------------------------------
+	 * Stage should use explicit, deterministic routing.
+	 * Enable trust_proxy only if your staging sits behind a proxy/LB.
+	 */
+	'http' => [
+		'base_url' => 'https://stagedemo.citomni.com',  						// Your stage-url, i.e. https://stage.example.com <- REMEMBER: No trailing slash!
+		// 'trust_proxy' => true,									// Enable only when reverse-proxied.
+		// 'trusted_proxies' => ['10.0.0.0/8','192.168.0.0/16'],	// Optional proxy IP/CIDR allow-list.
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * COOKIE
+	 * ------------------------------------------------------------------
+	 * Mirror production cookie posture to surface issues early.
+	 */
+	'cookie' => [
+		'secure'   => true,  // HTTPS-only on staging
+		'httponly' => true,
+		'samesite' => 'Lax',
+		'path'     => '/',
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * SESSION
+	 * ------------------------------------------------------------------
+	 * Keep session policy aligned with production for realistic QA.
+	 */
+	'session' => [
+		'save_path'       => \CITOMNI_APP_PATH . '/var/state/php_sessions',
+		'cookie_secure'   => true,
+		'cookie_httponly' => true,
+		'cookie_samesite' => 'Lax',
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * ERROR HANDLER
+	 * ------------------------------------------------------------------
+	 * Never render non-fatal PHP errors to stage clients. Force E_ALL and
+	 * keep the non-fatal log mask broad for deterministic QA diagnostics.
+	 * Trace bounds, log paths, rotation and templates inherit baseline.
+	 */
+	'error_handler' => [
+		'render' => [
+			'trigger' => 0,
+			'force_error_reporting' => E_ALL,
+		],
+		'log' => [
+			'trigger' => E_ALL,
+		],
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * VIEW
+	 * ------------------------------------------------------------------
+	 * Cache templates to approximate production performance.
+	 */
+	'view' => [
+		'cache_enabled' => true,
+	],
+
+
+	/*
+	 * ------------------------------------------------------------------
+	 * WEBHOOKS
+	 * ------------------------------------------------------------------
+	 * Keep admin webhooks disabled unless actively used.
+	 * Secrets do NOT live in cfg. The HMAC secret is loaded from:
+	 *   CITOMNI_APP_PATH . '/var/secrets/webhooks.secret.php'
+	 * Baseline keys live in \CitOmni\Http\Boot\Registry::CFG_HTTP - override here only if needed.
+	 */
+	/*
+	'webhooks' => [
+		// Master switch. Keep disabled unless actively used.
+		'enabled' => true,
+
+		// Optional allow-list of source IPs (exact or IPv4 CIDR). 
+		// Empty list = no IP restriction. Non-empty = request IP must match one of the listed entries.
+		// Useful for whitelisting fixed build/deploy agents or CI runners.
+		// 'allowed_ips' => [
+			// '186.221.2.10',	// Example: Fixed outbound IP of your DevKit or CI server.
+		// ],
+	],
+	*/
+	
+	
+];

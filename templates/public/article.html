@@ -1,0 +1,16 @@
+{% extends "public/layout.html@app" %}
+
+{% block meta_title %}{{ $article['title'] }}{% endblock %}
+
+{% block content %}
+	<article>
+		<h1>{{ $article['title'] }}</h1>
+		<p class="muted">
+			<time datetime="{{ $article['published_at'] }}">{{ $dt($article['published_at'], $txt('date_pattern', 'articles', 'app', 'd MMMM y')) }}</time>
+			- {{ $txt('reading_time', 'articles', 'app', '%MINUTES% min read', ['MINUTES' => $reading_minutes]) }}
+		</p>
+		<div class="body">{{ $article['body'] }}</div>
+	</article>
+
+	<p><a href="{{ $url('/') }}">{{ $txt('back_to_articles', 'articles', 'app', 'All articles') }}</a></p>
+{% endblock %}

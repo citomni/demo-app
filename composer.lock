@@ -1,0 +1,733 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "15d9c97f0daf8ed2c46bea982cc6fae9",
+    "packages": [
+        {
+            "name": "citomni/cli",
+            "version": "v1.0.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/citomni/cli.git",
+                "reference": "49ac944b0af76690e23e912d80902b0ca5cc9a5e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/citomni/cli/zipball/49ac944b0af76690e23e912d80902b0ca5cc9a5e",
+                "reference": "49ac944b0af76690e23e912d80902b0ca5cc9a5e",
+                "shasum": ""
+            },
+            "require": {
+                "citomni/kernel": "^1.0.2.5",
+                "php": "^8.5"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.11",
+                "phpunit/phpunit": "^11.0"
+            },
+            "suggest": {
+                "citomni/http": "Lets cache:warm and cache:clear handle the HTTP caches (--mode=http, and HTTP in --mode=all)",
+                "citomni/infrastructure": "Optional services used when present (log, txt/mail/db)",
+                "ext-json": "Faster JSON handling for CLI ErrorHandler JSONL logging",
+                "ext-opcache": "Better performance and cache invalidation"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CitOmni\\Cli\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lars Grove Mortensen",
+                    "homepage": "https://www.citomni.com"
+                }
+            ],
+            "description": "High-performance CLI runtime for CitOmni apps: kernel boot glue, command runner, console dispatch, and CLI error handling.",
+            "homepage": "https://github.com/citomni/cli",
+            "keywords": [
+                "citomni",
+                "citomni-framework",
+                "citomni-php",
+                "cli",
+                "cli-app",
+                "command-line",
+                "command-runner",
+                "console",
+                "deterministic",
+                "green-coding",
+                "high-performance",
+                "kernel",
+                "low-overhead",
+                "php",
+                "php-cli",
+                "php-cli-framework",
+                "php-framework",
+                "php8",
+                "runtime",
+                "service-container"
+            ],
+            "support": {
+                "docs": "https://github.com/citomni/cli#readme",
+                "issues": "https://github.com/citomni/cli/issues",
+                "source": "https://github.com/citomni/cli"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/LarsGMortensen",
+                    "type": "github"
+                },
+                {
+                    "url": "https://ko-fi.com/",
+                    "type": "ko_fi"
+                },
+                {
+                    "url": "https://opencollective.com/",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2026-10-14T21:46:47+00:00"
+        },
+        {
+            "name": "citomni/demo-provider",
+            "version": "v1.0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/citomni/demo-provider.git",
+                "reference": "a3035738e95a1ba896b468be3348acb1cc5b22a6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/citomni/demo-provider/zipball/a3035738e95a1ba896b468be3348acb1cc5b22a6",
+                "reference": "a3035738e95a1ba896b468be3348acb1cc5b22a6",
+                "shasum": ""
+            },
+            "require": {
+                "citomni/infrastructure": "^1.0.1.2",
+                "ext-mbstring": "*",
+                "php": "^8.5"
+            },
+            "conflict": {
+                "citomni/cli": "<1.0.0.9",
+                "citomni/http": "<1.0.5.4"
+            },
+            "suggest": {
+                "citomni/cli": "Runs the notice:schedule, notice:expire and notice:list commands.",
+                "citomni/http": "Serves /notices.json, the management pages and the $site_notices template variable."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CitOmni\\DemoProvider\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lars Grove Mortensen",
+                    "email": "lars@grove-mortensen.dk",
+                    "homepage": "https://www.citomni.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Reference provider package for the CitOmni PHP framework: site notices with a Registry, a service, routes, templates, translations, CLI commands and an Operation. Shows each layer the canonical way, with a README per folder.",
+            "homepage": "https://github.com/citomni/demo-provider",
+            "keywords": [
+                "Best-Practices",
+                "ai-guidelines",
+                "citomni",
+                "coding-conventions",
+                "composer-package",
+                "demo",
+                "documentation",
+                "example",
+                "modular-architecture",
+                "php",
+                "php-framework",
+                "php85",
+                "provider",
+                "provider-package",
+                "reference-implementation"
+            ],
+            "support": {
+                "docs": "https://github.com/citomni/demo-provider/blob/main/README.md",
+                "email": "support@citomni.com",
+                "issues": "https://github.com/citomni/demo-provider/issues",
+                "security": "https://github.com/citomni/.github/blob/main/SECURITY.md",
+                "source": "https://github.com/citomni/demo-provider"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/LarsGMortensen",
+                    "type": "github"
+                },
+                {
+                    "url": "https://ko-fi.com/",
+                    "type": "ko_fi"
+                },
+                {
+                    "url": "https://opencollective.com/",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2026-10-15T17:04:56+00:00"
+        },
+        {
+            "name": "citomni/http",
+            "version": "v1.0.5.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/citomni/http.git",
+                "reference": "d3f19c40baaccf498ee224a8fb0e01e607d58328"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/citomni/http/zipball/d3f19c40baaccf498ee224a8fb0e01e607d58328",
+                "reference": "d3f19c40baaccf498ee224a8fb0e01e607d58328",
+                "shasum": ""
+            },
+            "require": {
+                "citomni/kernel": "^1.0.2.5",
+                "php": "^8.5"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.11",
+                "phpunit/phpunit": "^11.0"
+            },
+            "suggest": {
+                "citomni/image": "Codes and images for the captcha service (security.captcha_protection)",
+                "citomni/infrastructure": "Optional services used when present (log, txt/mail/db)",
+                "ext-fileinfo": "Accurate MIME detection for Response::download()",
+                "ext-json": "Faster JSON handling for Response/ErrorHandler",
+                "ext-opcache": "Better performance and cache invalidation"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CitOmni\\Http\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lars Grove Mortensen",
+                    "homepage": "https://www.citomni.com"
+                }
+            ],
+            "description": "High-performance HTTP runtime for CitOmni apps: kernel boot glue, request/response, router, view, security (CSRF, captcha), maintenance mode, webhooks HMAC, and nonce ledger.",
+            "homepage": "https://github.com/citomni/http",
+            "keywords": [
+                "citomni",
+                "delivery-layer",
+                "framework",
+                "framework-PHP",
+                "frameworks",
+                "high-performance",
+                "http",
+                "low-overhead",
+                "runtime"
+            ],
+            "support": {
+                "docs": "https://github.com/citomni/http#readme",
+                "issues": "https://github.com/citomni/http/issues",
+                "source": "https://github.com/citomni/http"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/LarsGMortensen",
+                    "type": "github"
+                },
+                {
+                    "url": "https://ko-fi.com/",
+                    "type": "ko_fi"
+                },
+                {
+                    "url": "https://opencollective.com/",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2026-10-14T21:45:24+00:00"
+        },
+        {
+            "name": "citomni/image",
+            "version": "v1.0.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/citomni/image.git",
+                "reference": "ab6a7a549e7818cddc73f46326031039c3daf00f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/citomni/image/zipball/ab6a7a549e7818cddc73f46326031039c3daf00f",
+                "reference": "ab6a7a549e7818cddc73f46326031039c3daf00f",
+                "shasum": ""
+            },
+            "require": {
+                "citomni/kernel": "^1.0.2.7",
+                "ext-gd": "*",
+                "ext-zlib": "*",
+                "php": "^8.5"
+            },
+            "suggest": {
+                "ext-imagick": "Second image backend: HEIC, TIFF and GIF output, plus AVIF where GD lacks it. Codec support is verified at runtime."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CitOmni\\Image\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lars Grove Mortensen",
+                    "email": "lars@grove-mortensen.dk",
+                    "homepage": "https://www.citomni.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Deterministic, reusable image inspection, transformation and encoding, plus captcha rendering, for CitOmni applications and packages.",
+            "homepage": "https://github.com/citomni/image",
+            "keywords": [
+                "Thumbnails",
+                "Webp",
+                "avif",
+                "captcha",
+                "citomni",
+                "exif",
+                "gd",
+                "high-performance",
+                "image",
+                "image-conversion",
+                "image-crop",
+                "image-processing",
+                "image-resize",
+                "jpeg",
+                "low-overhead",
+                "php",
+                "png"
+            ],
+            "support": {
+                "docs": "https://github.com/citomni/image/blob/main/README.md",
+                "email": "lars@grove-mortensen.dk",
+                "issues": "https://github.com/citomni/image/issues",
+                "security": "https://github.com/citomni/.github/blob/main/SECURITY.md",
+                "source": "https://github.com/citomni/image"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/LarsGMortensen",
+                    "type": "github"
+                },
+                {
+                    "url": "https://ko-fi.com/",
+                    "type": "ko_fi"
+                },
+                {
+                    "url": "https://opencollective.com/",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2026-10-15T12:04:27+00:00"
+        },
+        {
+            "name": "citomni/infrastructure",
+            "version": "v1.0.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/citomni/infrastructure.git",
+                "reference": "36a292a3f0cbfbb44aeb790811a115daafb7257b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/citomni/infrastructure/zipball/36a292a3f0cbfbb44aeb790811a115daafb7257b",
+                "reference": "36a292a3f0cbfbb44aeb790811a115daafb7257b",
+                "shasum": ""
+            },
+            "require": {
+                "citomni/kernel": "^1.0.2.8",
+                "ext-curl": "*",
+                "ext-mysqli": "*",
+                "php": "^8.5",
+                "phpmailer/phpmailer": "^6.9"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.11"
+            },
+            "suggest": {
+                "citomni/authenticate": "User accounts, login, registration, password lifecycle, MFA, trusted devices, and member profile flows.",
+                "citomni/cli": "CLI runtime for infrastructure-related commands, maintenance tasks, jobs, and developer tooling.",
+                "citomni/http": "HTTP runtime for request handling, views, and security integration.",
+                "ext-iconv": "Improves UTF-8 normalization in Mailer (fallbacks exist).",
+                "ext-mbstring": "Alternative for UTF-8 normalization in Mailer (fallbacks exist).",
+                "ext-opcache": "Better performance in production."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CitOmni\\Infrastructure\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lars Grove Mortensen",
+                    "homepage": "https://www.citomni.com"
+                }
+            ],
+            "description": "Lean, cross-mode infrastructure for CitOmni apps: DB, logging, text/i18n, mail, cURL, and brute-force protection.",
+            "homepage": "https://github.com/citomni/infrastructure",
+            "keywords": [
+                "PSR-4",
+                "citomni",
+                "citomni-framework",
+                "citomni-php",
+                "cli",
+                "deterministic",
+                "green-by-design",
+                "high-performance",
+                "http",
+                "infrastructure",
+                "low-overhead",
+                "php",
+                "php8"
+            ],
+            "support": {
+                "docs": "https://github.com/citomni/infrastructure#readme",
+                "issues": "https://github.com/citomni/infrastructure/issues",
+                "source": "https://github.com/citomni/infrastructure"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/LarsGMortensen",
+                    "type": "github"
+                },
+                {
+                    "url": "https://ko-fi.com/",
+                    "type": "ko_fi"
+                },
+                {
+                    "url": "https://opencollective.com/",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2026-10-15T15:43:59+00:00"
+        },
+        {
+            "name": "citomni/installer",
+            "version": "v1.0.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/citomni/installer.git",
+                "reference": "9183f0bd72a5a7e3b4fedcc1f711b03eb537d5de"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/citomni/installer/zipball/9183f0bd72a5a7e3b4fedcc1f711b03eb537d5de",
+                "reference": "9183f0bd72a5a7e3b4fedcc1f711b03eb537d5de",
+                "shasum": ""
+            },
+            "require": {
+                "citomni/kernel": "^1.0",
+                "php": "^8.5"
+            },
+            "suggest": {
+                "citomni/cli": "Provides CLI runtime and package-owned CLI scaffold manifests that citomni/installer can discover, install, repair, and sync.",
+                "citomni/http": "Provides HTTP runtime and package-owned HTTP scaffold manifests that citomni/installer can discover, install, repair, and sync."
+            },
+            "bin": [
+                "bin/citomni-installer"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CitOmni\\Installer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lars Grove Mortensen",
+                    "homepage": "https://www.citomni.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Deterministic scaffold materializer and lifecycle tool for CitOmni applications.",
+            "homepage": "https://github.com/citomni/installer",
+            "keywords": [
+                "citomni",
+                "citomni-framework",
+                "citomni-php",
+                "developer-tools",
+                "diff",
+                "installer",
+                "lifecycle",
+                "php",
+                "php-framework",
+                "php8",
+                "repair",
+                "repair-service",
+                "scaffold",
+                "scaffolder",
+                "scaffolding",
+                "sync"
+            ],
+            "support": {
+                "issues": "https://github.com/citomni/installer/issues",
+                "source": "https://github.com/citomni/installer"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/LarsGMortensen",
+                    "type": "github"
+                },
+                {
+                    "url": "https://ko-fi.com/",
+                    "type": "ko_fi"
+                },
+                {
+                    "url": "https://opencollective.com/",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2026-10-13T19:46:49+00:00"
+        },
+        {
+            "name": "citomni/kernel",
+            "version": "v1.0.2.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/citomni/kernel.git",
+                "reference": "51c64e57167b67770a0bcb7b6f605b8df3dd5a46"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/citomni/kernel/zipball/51c64e57167b67770a0bcb7b6f605b8df3dd5a46",
+                "reference": "51c64e57167b67770a0bcb7b6f605b8df3dd5a46",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.5"
+            },
+            "suggest": {
+                "citomni/authenticate": "User accounts, login, registration, password lifecycle, MFA, trusted devices, and member profile flows.",
+                "citomni/cli": "CLI runtime: Kernel+command runner with the same deterministic boot",
+                "citomni/http": "HTTP runtime: Kernel+router+request/response+error handler for web apps",
+                "citomni/infrastructure": "Shared infra services (db, log, mail, txt) for HTTP & CLI",
+                "citomni/testing": "Dev-only integration test harness; zero prod overhead",
+                "ext-apcu": "Speed up Composer's class loading in production",
+                "ext-json": "Faster JSON handling",
+                "ext-mbstring": "Robust string handling",
+                "ext-opcache": "Production performance"
+            },
+            "type": "library",
+            "extra": {
+                "citomni": {
+                    "scaffold": "install/manifest.php"
+                },
+                "branch-alias": {
+                    "dev-main": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CitOmni\\Kernel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lars Grove Mortensen",
+                    "homepage": "https://www.citomni.com"
+                }
+            ],
+            "description": "Ultra-lean application kernel for CitOmni-based apps. PHP, PSR-4, deterministic boot, zero runtime magic.",
+            "homepage": "https://github.com/citomni/kernel",
+            "keywords": [
+                "Service-Locator",
+                "deterministic",
+                "framework",
+                "framework-PHP",
+                "frameworks",
+                "high-performance",
+                "kernel",
+                "lazy-loading",
+                "lazy-loading-components",
+                "lightweight",
+                "lightweight-framework",
+                "low-overhead",
+                "php-framework",
+                "php8",
+                "service-map"
+            ],
+            "support": {
+                "docs": "https://github.com/citomni/kernel#readme",
+                "issues": "https://github.com/citomni/kernel/issues",
+                "source": "https://github.com/citomni/kernel"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/LarsGMortensen",
+                    "type": "github"
+                },
+                {
+                    "url": "https://ko-fi.com/",
+                    "type": "ko_fi"
+                },
+                {
+                    "url": "https://opencollective.com/",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2026-10-15T15:25:39+00:00"
+        },
+        {
+            "name": "phpmailer/phpmailer",
+            "version": "v6.12.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPMailer/PHPMailer.git",
+                "reference": "d1ac35d784bf9f5e61b424901d5a014967f15b12"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/d1ac35d784bf9f5e61b424901d5a014967f15b12",
+                "reference": "d1ac35d784bf9f5e61b424901d5a014967f15b12",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "ext-filter": "*",
+                "ext-hash": "*",
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+                "doctrine/annotations": "^1.2.6 || ^1.13.3",
+                "php-parallel-lint/php-console-highlighter": "^1.0.0",
+                "php-parallel-lint/php-parallel-lint": "^1.3.2",
+                "phpcompatibility/php-compatibility": "^9.3.5",
+                "roave/security-advisories": "dev-latest",
+                "squizlabs/php_codesniffer": "^3.7.2",
+                "yoast/phpunit-polyfills": "^1.0.4"
+            },
+            "suggest": {
+                "decomplexity/SendOauth2": "Adapter for using XOAUTH2 authentication",
+                "ext-mbstring": "Needed to send email in multibyte encoding charset or decode encoded addresses",
+                "ext-openssl": "Needed for secure SMTP sending and DKIM signing",
+                "greew/oauth2-azure-provider": "Needed for Microsoft Azure XOAUTH2 authentication",
+                "hayageek/oauth2-yahoo": "Needed for Yahoo XOAUTH2 authentication",
+                "league/oauth2-google": "Needed for Google XOAUTH2 authentication",
+                "psr/log": "For optional PSR-3 debug logging",
+                "symfony/polyfill-mbstring": "To support UTF-8 if the Mbstring PHP extension is not enabled (^1.2)",
+                "thenetworg/oauth2-azure": "Needed for Microsoft XOAUTH2 authentication"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PHPMailer\\PHPMailer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1-only"
+            ],
+            "authors": [
+                {
+                    "name": "Marcus Bointon",
+                    "email": "phpmailer@synchromedia.co.uk"
+                },
+                {
+                    "name": "Jim Jagielski",
+                    "email": "jimjag@gmail.com"
+                },
+                {
+                    "name": "Andy Prevost",
+                    "email": "codeworxtech@users.sourceforge.net"
+                },
+                {
+                    "name": "Brent R. Matzelle"
+                }
+            ],
+            "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
+            "support": {
+                "issues": "https://github.com/PHPMailer/PHPMailer/issues",
+                "source": "https://github.com/PHPMailer/PHPMailer/tree/v6.12.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Synchro",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-10-15T16:49:08+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": true,
+    "prefer-lowest": false,
+    "platform": {
+        "php": "^8.5",
+        "ext-mbstring": "*"
+    },
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
+}

@@ -1,0 +1,20 @@
+{% extends "public/layout.html@app" %}
+
+{% block meta_title %}{{ $txt('articles_title', 'articles', 'app', 'Articles') }}{% endblock %}
+
+{% block content %}
+	<h1>{{ $txt('articles_title', 'articles', 'app', 'Articles') }}</h1>
+
+	{% if ($articles === []) %}
+		<p class="muted">{{ $txt('articles_empty', 'articles', 'app', 'No articles have been published yet.') }}</p>
+	{% else %}
+		<ul class="list">
+			{% foreach ($articles as $article) %}
+				<li>
+					<a href="{{ $url('/article/' . $article['id'] . '.html') }}">{{ $article['title'] }}</a><br>
+					<time class="muted" datetime="{{ $article['published_at'] }}">{{ $dt($article['published_at'], $txt('date_pattern', 'articles', 'app', 'd MMMM y')) }}</time>
+				</li>
+			{% endforeach %}
+		</ul>
+	{% endif %}
+{% endblock %}

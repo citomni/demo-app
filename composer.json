@@ -1,0 +1,75 @@
+{
+    "name": "citomni/demo-app",
+    "description": "Runnable reference demo app for the CitOmni PHP framework. Shows each layer the canonical way, with a README per folder that guides new developers.",
+    "type": "project",
+    "license": "MIT",
+    "keywords": [
+        "citomni",
+        "php",
+        "php85",
+        "php-framework",
+        "demo",
+        "example-app",
+        "examples",
+        "reference-implementation",
+        "layered-architecture",
+        "best-practices",
+        "coding-conventions",
+        "developer-onboarding",
+        "ai-guidelines",
+        "llm",
+        "documentation"
+    ],
+    "homepage": "https://demo.citomni.com",
+    "support": {
+        "email": "support@citomni.com",
+        "issues": "https://github.com/citomni/demo-app/issues",
+        "source": "https://github.com/citomni/demo-app",
+        "docs": "https://github.com/citomni/demo-app/blob/main/README.md",
+        "security": "https://github.com/citomni/.github/blob/main/SECURITY.md"
+    },
+    "require": {
+        "php": "^8.5",
+        "ext-mbstring": "*",
+        "citomni/cli": "^1.0.0.9",
+        "citomni/demo-provider": "^1.0.0.1",
+        "citomni/http": "^1.0.5.4",
+        "citomni/image": "^1.0.0.2",
+        "citomni/infrastructure": "^1.0.1.2",
+        "citomni/installer": "^1.0.0.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "classmap-authoritative": false,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "scripts": {
+        "citomni:doctor": "vendor/bin/citomni-installer doctor",
+        "citomni:status": "vendor/bin/citomni-installer status",
+        "citomni:install": "vendor/bin/citomni-installer install",
+        "citomni:sync": "vendor/bin/citomni-installer sync",
+        "citomni:repair": "vendor/bin/citomni-installer repair",
+        "citomni:diff": "vendor/bin/citomni-installer diff",
+        "test": "@php tests/run.php"
+    },
+    "authors": [
+        {
+            "name": "Lars Grove Mortensen",
+            "email": "lars@grove-mortensen.dk",
+            "homepage": "https://www.citomni.com",
+            "role": "Developer"
+        }
+    ]
+}
