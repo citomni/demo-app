@@ -44,5 +44,8 @@ return [
 	'omit' => [
 		// The demo app keeps only its example Controllers.
 		'src/Http/Controller/AppController.php',
+		// Both folders hold app files, so Git needs no placeholder to keep them.
+		'src/Cli/Command/.gitkeep',
+		'src/Http/.gitkeep',
 	],
 ];
