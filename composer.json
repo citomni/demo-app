@@ -59,9 +59,10 @@
         "citomni:doctor": "vendor/bin/citomni-installer doctor",
         "citomni:status": "vendor/bin/citomni-installer status",
         "citomni:install": "vendor/bin/citomni-installer install",
-        "citomni:sync": "vendor/bin/citomni-installer sync",
+        "citomni:migrate": "vendor/bin/citomni-installer migrate",
+        "citomni:environment": "vendor/bin/citomni-installer environment",
         "citomni:repair": "vendor/bin/citomni-installer repair",
-        "citomni:diff": "vendor/bin/citomni-installer diff",
+        "citomni:sync": "vendor/bin/citomni-installer sync",
         "test": "@php tests/run.php"
     },
     "authors": [
