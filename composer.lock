@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "15d9c97f0daf8ed2c46bea982cc6fae9",
+    "content-hash": "ec7071f97424c10e13615a7be56eaabf",
     "packages": [
         {
             "name": "citomni/cli",
@@ -194,20 +194,21 @@
         },
         {
             "name": "citomni/http",
-            "version": "v1.0.5.4",
+            "version": "v1.0.5.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/citomni/http.git",
-                "reference": "d3f19c40baaccf498ee224a8fb0e01e607d58328"
+                "reference": "04237ee753a33a8c1f7ddbb44b4d3eb237da63df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/citomni/http/zipball/d3f19c40baaccf498ee224a8fb0e01e607d58328",
-                "reference": "d3f19c40baaccf498ee224a8fb0e01e607d58328",
+                "url": "https://api.github.com/repos/citomni/http/zipball/04237ee753a33a8c1f7ddbb44b4d3eb237da63df",
+                "reference": "04237ee753a33a8c1f7ddbb44b4d3eb237da63df",
                 "shasum": ""
             },
             "require": {
-                "citomni/kernel": "^1.0.2.5",
+                "citomni/kernel": "^1.0.2.8",
+                "ext-intl": "*",
                 "php": "^8.5"
             },
             "require-dev": {
@@ -274,7 +275,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2026-10-14T21:45:24+00:00"
+            "time": "2026-10-15T19:07:49+00:00"
         },
         {
             "name": "citomni/image",

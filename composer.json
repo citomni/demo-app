@@ -33,7 +33,7 @@
         "ext-mbstring": "*",
         "citomni/cli": "^1.0.0.9",
         "citomni/demo-provider": "^1.0.0.1",
-        "citomni/http": "^1.0.5.4",
+        "citomni/http": "^1.0.5.5",
         "citomni/image": "^1.0.0.2",
         "citomni/infrastructure": "^1.0.1.2",
         "citomni/installer": "^1.0.0.5"
