@@ -28,7 +28,8 @@ The last line of every suite, and of the runner, holds the totals: `N passed, M 
 - One `test('<name>', function (): void { ... })` per case, with `check()` and `throws()` inside, and `done()` as the last statement. A case name says what must hold, so the `PASS` line reads as a fact.
 - Suites never load Composer's autoloader. They replace citomni/kernel's `App`, `Cfg` and base classes with the doubles in `tests/Support/Kernel/`, and Composer could load a real kernel class first. The bootstrap loads `App\` from `src/`, `App\Tests\` from `tests/` and `CitOmni\Infrastructure\` from `vendor/`.
 - Code under test runs unchanged. When it needs a kernel feature that a double lacks, extend the double.
-- Never load the app's configuration. Build the app double with exactly the cfg a case reads.
+- Never boot the app: use none of its `config/` files, its provider list or its environment layers. Build the app double with exactly the cfg a case reads.
+- The one exception: an app file whose content is itself under test, such as the route table or a security policy, may be read. The suite uses only the part it tests and never prints it.
 - Declare no named class in a suite script: it breaks PSR-4 for `App\Tests\`, and Composer warns about it on every install. Use an anonymous class, or a class of its own in `tests/Support/`.
 
 ## What to test where
@@ -41,7 +42,7 @@ The last line of every suite, and of the runner, holds the totals: `N passed, M 
 
 ## Database suites
 
-- Connection: `root` on `127.0.0.1:3306` over TCP. The password comes only from `CITOMNI_TEST_PASSWORD`; unset means no password. Use a local development server; the suites create and drop databases.
+- Connection: `root` on `127.0.0.1:3306` over TCP. The password comes only from `CITOMNI_TEST_PASSWORD`; unset means no password. Nothing of the connection comes from the app's configuration. Use a local development server; the suites create and drop databases.
 - Each run uses one database of its own. `\App\Tests\Support\TestDatabase::create()` creates `citomni_demo_app_<suite>_test_<random>`; the suite selects it, imports `sql/citomni_demo-app.sql`, the current schema, and calls `TestDatabase::drop()` in `finally`, which drops only a database that `create()` named.
 - `TestDatabase::app()` returns an app double with the real Db service on that database. Its db node is the `db` node of `\CitOmni\Infrastructure\Boot\Registry::CFG_COMMON` with the test server's settings on top, as an app's config overrides it. The password reaches it through an in-memory secrets double.
 - Never put the password on a command line, in a file or in output. Worker processes inherit it through the environment.

@@ -148,6 +148,7 @@ Section dividers mark structure, not length: groups of members with different ro
 ## Cfg
 
 - `$this->app->cfg` is read-only. Associative arrays become nested Cfg nodes; lists stay plain arrays.
+- An empty array becomes an empty Cfg node, also for a key that normally holds a list. Read such a key as `$v instanceof Cfg ? $v->toArray() : $v`; never cast a Cfg node with `(array)`.
 - A direct read throws `\OutOfBoundsException` at the first missing key, at any depth.
 - `??` and `isset()` are both existence guards: every node on the path is checked, so neither throws on a missing key. `??` also falls back when the value is `null`; `isset()` is true for a key whose value is `null`.
 - Cfg that the app defines in its own `config/` files is read directly, with no `??`, `isset()`, `empty()` or `?->`: `(int)$this->app->cfg->articles->words_per_minute`. A guard would repeat the value from `config/` and hide a key that is missing there; add the key instead.
