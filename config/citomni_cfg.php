@@ -195,4 +195,23 @@ return [
 	],
 
 
+	/*
+	 *------------------------------------------------------------------
+	 * MAIL
+	 *------------------------------------------------------------------
+	 * Sender of the mailer service of citomni/infrastructure, the same in
+	 * every environment and in both modes; a mail block only in the HTTP
+	 * files would leave CLI code without a sender. The transport belongs to
+	 * each environment, in config/citomni_cfg.{ENV}.php. This app sends no
+	 * mail, so the block is an example. Until mail.from.email is set, using
+	 * the mailer throws MailerConfigException.
+	 */
+	// 'mail' => [
+		// 'from' => [
+			// 'email' => 'noreply@example.com',
+			// 'name'  => 'Demo App',
+		// ],
+	// ],
+
+
 ];

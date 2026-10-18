@@ -46,4 +46,17 @@ return [
 		// 'user'		=> 'citomni',
 	// ],
 
+	// Mail transport of this environment. Point dev at a local mail catcher,
+	// such as Mailpit on port 1025, so that no message reaches a real inbox.
+	// Encryption 'none' sends in plain text, which only a local catcher should
+	// accept. Without a username the mailer does not authenticate, so dev needs
+	// no 'mail.smtp.password' secret.
+	// 'mail' => [
+		// 'smtp' => [
+			// 'host'       => 'localhost',
+			// 'port'       => 1025,
+			// 'encryption' => 'none',
+		// ],
+	// ],
+
 ];

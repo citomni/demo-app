@@ -46,4 +46,16 @@ return [
 		// 'user' => 'demo_app',
 	// ],
 
+	// Mail transport of this environment. SMTP on port 587 with required
+	// STARTTLS is the baseline of citomni/infrastructure, so set only the host
+	// and the account. With a username, the mailer reads the password from the
+	// secret 'mail.smtp.password' in var/secrets/app.secret.prod.php; it never
+	// goes in cfg.
+	// 'mail' => [
+		// 'smtp' => [
+			// 'host'     => 'smtp.example.com',
+			// 'username' => 'noreply@example.com',
+		// ],
+	// ],
+
 ];

@@ -530,6 +530,12 @@ Development may auto-detect where the selected mode package allows it, but stage
 
 Use `services.php` for cross-mode services. Use `services_http.php` or `services_cli.php` when the service definition is transport-specific.
 
+### 8. Keep database and mail connections in the common files
+
+The `db` and `mail` nodes of `citomni/infrastructure` serve HTTP and CLI alike: a command or a job uses the same database and the same sender as a request. Put what every environment shares, such as the mail sender, in `citomni_cfg.php`, and the connection of each environment in `citomni_cfg.<env>.php`. A node that only an HTTP file sets leaves CLI on the baseline: the Db service connects to its default database, and the mailer throws `MailerConfigException` for want of a sender.
+
+Passwords never go in cfg. The services read them as secrets from `var/secrets/app.secret.<env>.php`: `db.password` and `mail.smtp.password` unless `db.password_secret` or `mail.smtp.password_secret` names another key. This app's `citomni_cfg.php` and `citomni_cfg.<env>.php` show both nodes as commented examples.
+
 ## Recommended Defaults by App Type
 
 ### Neutral application

@@ -142,6 +142,8 @@ return [
 
 The connection settings belong to the environment, because each environment usually has its own database. When one differs from the baseline above, set `host`, `user` or `name` under `db` in `config/citomni_cfg.dev.php`, `.stage.php` or `.prod.php`; each file has a commented example. The password always stays in `var/secrets/app.secret.{ENV}.php`.
 
+The app sends no mail, but its config shows where the mailer of citomni/infrastructure is set up: the sender in `config/citomni_cfg.php`, the transport of each environment in `config/citomni_cfg.dev.php`, `.stage.php` and `.prod.php`, and the SMTP password as the secret `mail.smtp.password`. The dev example points at a local mail catcher, so that no message reaches a real inbox.
+
 Create a draft and publish it. A draft needs at least 20 words (`articles.min_words_to_publish`):
 
 ```bash
