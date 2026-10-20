@@ -82,7 +82,7 @@ The PublishArticle guard check also checks where the exception was thrown: `Arti
 | listPublished() returns only published articles, newest first, within the limit | Filter, order with `id` as tie-breaker, limit, row shape |
 | listDrafts() returns only drafts, newest first, within the limit | Filter, order, limit, row shape |
 | markPublished() publishes a draft once and stamps published_at | Guarded state change |
-| The schema refuses an unknown status and a published row without published_at | The two check constraints in `sql/citomni_demo-app.sql`, by name |
+| The schema refuses a status that is not exactly draft or published, and a published row without published_at | The two check constraints in `sql/citomni_demo-app.sql`, by name: an unknown status, trailing and leading spaces, another letter case, a tab and `''`; the exact value is stored |
 | PublishArticle publishes a draft that PublishingPolicy allows | `published` |
 | PublishArticle returns not_found for a missing article | `not_found` |
 | PublishArticle refuses with the reasons of PublishingPolicy and changes nothing | `refused` with policy reasons |

@@ -32,7 +32,7 @@ CREATE TABLE `demo_articles` (
   `published_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `ix_demo_articles_status_published` (`status`,`published_at`),
-  CONSTRAINT `chk_demo_articles_status` CHECK (`status` in ('draft','published')),
+  CONSTRAINT `chk_demo_articles_status` CHECK (cast(`status` as char charset binary) in ('draft','published')),
   CONSTRAINT `chk_demo_articles_published_at` CHECK (`status` <> 'published' or `published_at` is not null)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

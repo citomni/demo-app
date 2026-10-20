@@ -364,16 +364,23 @@ try {
 		check($articles->markPublished($id + 1) === false, 'A missing id was published');
 	});
 
-	test('The schema refuses an unknown status and a published row without published_at', function () use ($admin): void {
+	test('The schema refuses a status that is not exactly draft or published, and a published row without published_at', function () use ($admin): void {
 		emptyTable($admin);
 
-		// MySQL and MariaDB both name the violated constraint in the message.
-		$e = throws(\mysqli_sql_exception::class, fn() => $admin->query("INSERT INTO demo_articles (title, body, status) VALUES ('Title', 'Body', 'archived')"));
-		check(\str_contains($e->getMessage(), 'chk_demo_articles_status'), 'Unexpected error: ' . $e->getMessage());
+		// MySQL and MariaDB both name the violated constraint in the message. The collation of the
+		// column ignores trailing spaces in comparisons, so only a check that compares bytes refuses
+		// them. Every row has published_at, so only the status check can refuse it.
+		foreach (['archived', 'draft ', 'published  ', ' draft', 'Draft', "draft\t", ''] as $status) {
+			$e = throws(\mysqli_sql_exception::class, fn() => $admin->execute_query("INSERT INTO demo_articles (title, body, status, published_at) VALUES ('Title', 'Body', ?, '2026-01-01 10:00:00')", [$status]));
+			check(\str_contains($e->getMessage(), 'chk_demo_articles_status'), \json_encode($status) . ': unexpected error: ' . $e->getMessage());
+		}
 
 		$admin->query("INSERT INTO demo_articles (title, body) VALUES ('Title', 'Body')");
 		$e = throws(\mysqli_sql_exception::class, fn() => $admin->query("UPDATE demo_articles SET status = 'published' WHERE id = 1"));
 		check(\str_contains($e->getMessage(), 'chk_demo_articles_published_at'), 'Unexpected error: ' . $e->getMessage());
+
+		$admin->query("UPDATE demo_articles SET status = 'published', published_at = '2026-01-01 10:00:00' WHERE id = 1");
+		check(row($admin, 1)['status'] === 'published', 'The exact value was not stored as given');
 	});
 
 

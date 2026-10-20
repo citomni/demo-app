@@ -132,6 +132,8 @@ mysql -u root -p citomni < vendor/citomni/infrastructure/sql/citomni_bruteforce.
 mysql -u root -p citomni < vendor/citomni/demo-provider/sql/citomni_demo-provider.sql
 ```
 
+A database that has the schemas of an earlier release takes the newer files in `sql/migrations/` and in the `sql/migrations/` folder of each package instead, each folder in name order.
+
 Put the password in `var/secrets/app.secret.dev.php`. The installer created that file, and Git ignores it:
 
 ```php
