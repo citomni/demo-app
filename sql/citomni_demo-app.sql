@@ -32,8 +32,8 @@ CREATE TABLE `demo_articles` (
   `published_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `ix_demo_articles_status_published` (`status`,`published_at`),
-  CONSTRAINT `chk_demo_articles_status` CHECK (cast(`status` as char charset binary) in ('draft','published')),
-  CONSTRAINT `chk_demo_articles_published_at` CHECK (`status` <> 'published' or `published_at` is not null)
+  CONSTRAINT `chk_demo_articles_published_at` CHECK (`status` <> 'published' or `published_at` is not null),
+  CONSTRAINT `chk_demo_articles_status` CHECK (cast(`status` as char charset binary) in ('draft','published'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -63,4 +63,4 @@ CREATE TABLE `demo_contact_messages` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2026-10-17 15:55:28
+-- Dump completed on 2026-10-20 11:52:15
