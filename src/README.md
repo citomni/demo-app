@@ -9,6 +9,7 @@ Rules for every PHP file under `src/`. Read this file first, then the README of 
 | `Http/Controller/` | HTTP adapters | The Router, from the route map |
 | `Cli/Command/` | CLI adapters | The CLI runner, from the command map |
 | `JobRunner/` | Job handlers for citomni/jobrunner | JobRunner, from cfg `jobrunner.handlers` |
+| `Findability/` | Providers for citomni/findability | citomni/findability, from its provider maps in cfg, such as `findability.search_sources` |
 | `Operation/` | One transport-agnostic domain action | Its adapter: `new PublishArticle($this->app)` |
 | `Repository/` | All SQL and datastore IO | Its caller: `new ArticleRepository($this->app)` |
 | `Service/` | Reusable App-aware singletons | The service map: `$this->app->serviceId` |

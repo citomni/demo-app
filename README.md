@@ -30,6 +30,7 @@ Code that several apps install with Composer is a provider package, with its own
 | Util, Enum, Exception | [`src/Util/`](src/Util/README.md), [`src/Enum/`](src/Enum/README.md), [`src/Exception/`](src/Exception/README.md) |
 | Constant, Contract | [`src/Constant/`](src/Constant/README.md), [`src/Contract/`](src/Contract/README.md) |
 | Job handler | [`src/JobRunner/`](src/JobRunner/README.md), with token/push and trusted/pull jobs |
+| Findability provider | [`src/Findability/`](src/Findability/README.md) |
 | Template | [`templates/`](templates/README.md) |
 | Language file | [`language/`](language/README.md) |
 | Database schema | [`sql/`](sql/README.md) |
