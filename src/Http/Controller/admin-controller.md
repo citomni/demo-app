@@ -13,7 +13,7 @@ A Controller in the admin section. `README.md` applies except where this file sa
   1) Initialize state that `hasAdminAccess()` depends on, such as a Policy instance.
   2) Call `parent::init()` exactly once.
   3) Initialize state that assumes an authenticated, authorized admin.
-- Override `hasAdminAccess()` when the admin area needs another access rule than the default `$this->app->role->min('operator')`. Base it on a known Policy, Auth or Role contract. Authentication and the admin headers stay enforced by `init()`.
+- Override `hasAdminAccess()` when the admin area needs another access rule than the default, which lets in every role at or above cfg `admin.access_role` of citomni/admin. Base it on a known Policy, Auth or Role contract. Authentication and the admin headers stay enforced by `init()`. To move the threshold for every admin page, set `admin.access_role` in the app's cfg instead of overriding.
 
 ## Rules
 
