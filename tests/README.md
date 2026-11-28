@@ -4,7 +4,7 @@ Standalone PHP test suites, as defined by the CitOmni testing guide ([`contribut
 
 ## Layout
 
-- `tests/run.php` runs every suite: first all `tests/*/run.php`, then all `tests/*/database.php`, each group in alphabetical order. It is the reference runner from the testing guide; a new suite needs no registration.
+- `tests/run.php` runs every suite: first all `tests/*/run.php`, then all `tests/*/database.php`, each group in alphabetical order, then the suites of the installed packages, as [Package suites](#package-suites) describes. It is the testing guide's reference runner, extended with the suites of the installed packages; a new suite needs no registration.
 - `tests/<suite>/run.php`: isolated checks, without a database.
 - `tests/<suite>/database.php`: checks against a real MySQL or MariaDB server. A suite folder may hold both entry points.
 - `tests/<suite>/README.md`: the commands, the expected totals and what the suite covers.
@@ -17,10 +17,21 @@ Standalone PHP test suites, as defined by the CitOmni testing guide ([`contribut
 ```
 php tests/run.php
 composer test
+php tests/run.php app
+php tests/run.php citomni/demo-provider
 php tests/words/run.php
 ```
 
 The last line of every suite, and of the runner, holds the totals: `N passed, M failed`, with `, K skipped` when an optional check did not run. The exit code is 1 when a check fails.
+
+## Package suites
+
+After its own suites, the runner runs `tests/run.php` of each installed package of a vendor in `VENDORS`, in alphabetical order, each as one entry under a `== <vendor>/<package>` heading. An app that installs packages of another vendor whose suites follow the testing guide, such as its own, adds that vendor to `VENDORS`.
+
+- Every suite gets `CITOMNI_TEST_VENDOR` with the app's `vendor/`, so a package's suites load the other packages from the app, at the versions the app installs. PHP resolves the app's link to a package from a path repository, so the package's suites learn the app's `vendor/` only from the variable.
+- A package's suite that loads a package the app does not install skips itself, as [citomni/demo-provider](https://github.com/citomni/demo-provider/blob/main/tests/README.md#other-packages) describes. A skip is no failure; a failed check is.
+- A package installed without `tests/run.php`, such as from a dist archive where `tests/` is `export-ignore`, is listed under `== packages without suites`. A package from a path repository keeps its `tests/`.
+- Arguments choose what runs: `app` for the app's own suites, `<vendor>/<package>` for a package. A named package that is not installed, or has no `tests/run.php`, fails the run.
 
 ## Writing a suite
 

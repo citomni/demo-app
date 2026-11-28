@@ -175,6 +175,8 @@ The suites follow the CitOmni testing guide; [`tests/README.md`](tests/README.md
 composer test
 ```
 
+The runner runs the app's suites, then the suites of the installed citomni packages with the app's `vendor/`. `php tests/run.php app` runs only the app's suites, and `php tests/run.php citomni/demo-provider` only that package's.
+
 Multi-process checks are skipped unless `CITOMNI_TEST_PARALLEL` is `1`.
 
 ---
